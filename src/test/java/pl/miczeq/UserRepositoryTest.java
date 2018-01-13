@@ -2,6 +2,7 @@ package pl.miczeq;
 
 import org.junit.Before;
 import org.junit.Test;
+import pl.miczeq.exception.BadUserException;
 import pl.miczeq.exception.DatabaseException;
 import pl.miczeq.model.User;
 import pl.miczeq.repository.UserRepository;
@@ -18,9 +19,9 @@ public class UserRepositoryTest {
     @Test
     public void saveTest() {
         try {
-            userRepository.save(new User("user", "user123", "User", "User", "user@email.com"));
-        } catch (DatabaseException e) {
-            e.printStackTrace();
+            userRepository.save(new User("userxx", "", "User", "User", "userxx@email.com"));
+        } catch (BadUserException | DatabaseException e) {
+          e.printStackTrace();
         }
     }
 
@@ -28,7 +29,7 @@ public class UserRepositoryTest {
     public void updateTest() {
         try {
             System.out.println(userRepository.update(1L, new User("admin", "admin123", "ADMIN", "Admin", "admin@email.com")));
-        } catch (DatabaseException e) {
+        } catch (BadUserException | DatabaseException e) {
             e.printStackTrace();
         }
     }
@@ -45,7 +46,16 @@ public class UserRepositoryTest {
     @Test
     public void findOneByUsernameTest() {
         try {
-            System.out.println(userRepository.findOne("user"));
+            System.out.println(userRepository.findOneByUsername("user"));
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void findOneByEmailTest() {
+        try {
+            System.out.println(userRepository.findOneByEmail("usser@email.com"));
         } catch (DatabaseException e) {
             e.printStackTrace();
         }

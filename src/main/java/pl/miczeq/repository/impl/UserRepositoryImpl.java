@@ -1,6 +1,8 @@
 package pl.miczeq.repository.impl;
 
+import pl.miczeq.exception.BadUserException;
 import pl.miczeq.exception.DatabaseException;
+import pl.miczeq.model.Role;
 import pl.miczeq.model.User;
 import pl.miczeq.repository.UserRepository;
 import pl.miczeq.util.ConnectionUtil;
@@ -11,11 +13,13 @@ import java.util.List;
 
 public class UserRepositoryImpl implements UserRepository {
     @Override
-    public boolean save(User user) throws DatabaseException {
+    public boolean save(User user) throws BadUserException, DatabaseException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
 
-        final String SQL = "INSERT INTO user(USERNAME, PASSWORD, FIRST_NAME, LAST_NAME, EMAIL) VALUES(?, ?, ?, ?, ?)";
+        final String SQL = "INSERT INTO user(USERNAME, PASSWORD, FIRST_NAME, LAST_NAME, EMAIL, ROLE_ID) VALUES(?, ?, ?, ?, ?, 2)";
+
+        validateUser(user);
 
         try {
             connection = ConnectionUtil.getConnection();
@@ -45,11 +49,13 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public boolean update(Long id, User user) throws DatabaseException {
+    public boolean update(Long id, User user) throws BadUserException, DatabaseException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
 
         final String SQL = "UPDATE user SET USERNAME = ?, PASSWORD = ?, FIRST_NAME = ?, LAST_NAME = ?, EMAIL = ? WHERE ID = ?";
+
+        validateUser(user);
 
         try {
             connection = ConnectionUtil.getConnection();
@@ -85,7 +91,8 @@ public class UserRepositoryImpl implements UserRepository {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
-        final String SQL = "SELECT * FROM user WHERE ID = ?";
+        final String SQL = "SELECT u.ID, u.USERNAME, u.PASSWORD, u.FIRST_NAME, u.LAST_NAME, u.EMAIL, r.ID AS ROLE_ID, r.ROLE_NAME FROM user u" +
+                " INNER JOIN role r ON (u.ROLE_ID = r.ID) WHERE ID = ?";
 
         try {
             connection = ConnectionUtil.getConnection();
@@ -99,6 +106,7 @@ public class UserRepositoryImpl implements UserRepository {
             if (resultSet.next()) {
                 user = new User(resultSet.getLong("ID"), resultSet.getString("USERNAME"), resultSet.getString("PASSWORD"),
                         resultSet.getString("FIRST_NAME"), resultSet.getString("LAST_NAME"), resultSet.getString("EMAIL"));
+                user.getRoles().add(new Role(resultSet.getLong("ROLE_ID"), resultSet.getString("ROLE_NAME")));
             }
 
             if (resultSet.next()) {
@@ -118,12 +126,17 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User findOne(String username) throws DatabaseException {
+    public User findOneByUsername(String username) throws DatabaseException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
-        final String SQL = "SELECT * FROM user WHERE USERNAME = ?";
+        final String SQL = "SELECT u.ID, u.USERNAME, u.PASSWORD, u.FIRST_NAME, u.LAST_NAME, u.EMAIL, r.ID AS ROLE_ID, r.ROLE_NAME FROM user u" +
+                " INNER JOIN role r ON (u.ROLE_ID = r.ID) WHERE USERNAME = ?";
+
+        if (username == null || username.isEmpty()) {
+            throw new DatabaseException("Podany login jest pusty.");
+        }
 
         try {
             connection = ConnectionUtil.getConnection();
@@ -137,10 +150,55 @@ public class UserRepositoryImpl implements UserRepository {
             if (resultSet.next()) {
                 user = new User(resultSet.getLong("ID"), resultSet.getString("USERNAME"), resultSet.getString("PASSWORD"),
                         resultSet.getString("FIRST_NAME"), resultSet.getString("LAST_NAME"), resultSet.getString("EMAIL"));
+                user.getRoles().add(new Role(resultSet.getLong("ROLE_ID"), resultSet.getString("ROLE_NAME")));
             }
 
             if (resultSet.next()) {
-                throw new DatabaseException("Istnieje wiecej niz jeden unikalny uzytkownik z Loginem: " + username);
+                throw new DatabaseException("Istnieje wiecej niz jeden unikalny uzytkownik z Loginem: " + username + ".");
+            }
+
+            return user;
+
+        } catch (SQLException e) {
+            throw new DatabaseException("Problem po stronie bazy danych.", e);
+        } finally {
+            ConnectionUtil.close(resultSet);
+            ConnectionUtil.close(preparedStatement);
+            ConnectionUtil.close(connection);
+
+        }
+    }
+
+    @Override
+    public User findOneByEmail(String email) throws DatabaseException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        final String SQL = "SELECT u.ID, u.USERNAME, u.PASSWORD, u.FIRST_NAME, u.LAST_NAME, u.EMAIL, r.ID AS ROLE_ID, r.ROLE_NAME FROM user u" +
+                " INNER JOIN role r ON (u.ROLE_ID = r.ID) WHERE EMAIL = ?";
+
+        if (email == null || email.isEmpty()) {
+            throw new DatabaseException("Podany email jest pusty.");
+        }
+
+        try {
+            connection = ConnectionUtil.getConnection();
+            preparedStatement = connection.prepareStatement(SQL);
+            preparedStatement.setString(1, email);
+
+            resultSet = ConnectionUtil.getResultSet(preparedStatement);
+
+            User user = null;
+
+            if (resultSet.next()) {
+                user = new User(resultSet.getLong("ID"), resultSet.getString("USERNAME"), resultSet.getString("PASSWORD"),
+                        resultSet.getString("FIRST_NAME"), resultSet.getString("LAST_NAME"), resultSet.getString("EMAIL"));
+                user.getRoles().add(new Role(resultSet.getLong("ROLE_ID"), resultSet.getString("ROLE_NAME")));
+            }
+
+            if (resultSet.next()) {
+                throw new DatabaseException("Istnieje wiecej niz jeden unikalny uzytkownik z emailem: " + email + ".");
             }
 
             return user;
@@ -161,7 +219,8 @@ public class UserRepositoryImpl implements UserRepository {
         Statement statement = null;
         ResultSet resultSet = null;
 
-        final String SQL = "SELECT * FROM user";
+        final String SQL = "SELECT u.ID, u.USERNAME, u.PASSWORD, u.FIRST_NAME, u.LAST_NAME, u.EMAIL, r.ID AS ROLE_ID, r.ROLE_NAME FROM user u" +
+                " INNER JOIN role r ON (u.ROLE_ID = r.ID)";
 
         try {
             connection = ConnectionUtil.getConnection();
@@ -171,8 +230,10 @@ public class UserRepositoryImpl implements UserRepository {
             List<User> users = new ArrayList<>();
 
             while (resultSet.next()) {
-                users.add(new User(resultSet.getLong("ID"), resultSet.getString("USERNAME"), resultSet.getString("PASSWORD"),
-                        resultSet.getString("FIRST_NAME"), resultSet.getString("LAST_NAME"), resultSet.getString("EMAIL")));
+                User user = new User(resultSet.getLong("ID"), resultSet.getString("USERNAME"), resultSet.getString("PASSWORD"),
+                        resultSet.getString("FIRST_NAME"), resultSet.getString("LAST_NAME"), resultSet.getString("EMAIL"));
+                user.getRoles().add(new Role(resultSet.getLong("ROLE_ID"), resultSet.getString("ROLE_NAME")));
+                users.add(user);
             }
 
             return users;
@@ -212,5 +273,43 @@ public class UserRepositoryImpl implements UserRepository {
             ConnectionUtil.close(preparedStatement);
             ConnectionUtil.close(connection);
         }
+    }
+
+    private void validateUser(User user) throws DatabaseException, BadUserException {
+        if (user == null) {
+            throw new BadUserException("Uzytkownik jest nullem.");
+        }
+
+        if (isEmptyString(user.getUsername())) {
+            throw new BadUserException("Login nie moze byc pusty.");
+        }
+
+        if (isEmptyString(user.getEmail())) {
+            throw new BadUserException("Email nie moze byc pusty.");
+        }
+
+        if (isEmptyString(user.getPassword())) {
+            throw new BadUserException("Haslo nie moze byc puste.");
+        }
+
+        if (isEmptyString(user.getFirstname())) {
+            throw new BadUserException("Imie nie moze byc puste.");
+        }
+
+        if (findOneByUsername(user.getUsername()) != null) {
+            throw new BadUserException("Uzytkownik o takim loginie: " + user.getUsername() + " juz istnieje w bazie.");
+        }
+
+        if (findOneByEmail(user.getEmail()) != null) {
+            throw new BadUserException("Uzytkownik o takim emailu: " + user.getEmail() + " juz istnieje w bazie.");
+        }
+    }
+
+    private boolean isEmptyString(String string) {
+        if (string == null || string.isEmpty()) {
+            return true;
+        }
+
+        return false;
     }
 }

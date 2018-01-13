@@ -1,5 +1,8 @@
 package pl.miczeq.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class User {
     private Long id;
     private String username;
@@ -8,6 +11,8 @@ public class User {
     private String lastname;
     private String email;
 
+    private List<Role> roles;
+
     public User(Long id, String username, String password, String firstname, String lastname, String email) {
         this.id = id;
         this.username = username;
@@ -15,6 +20,8 @@ public class User {
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
+
+        roles = new ArrayList<>();
     }
 
     public User(String username, String password, String firstname, String lastname, String email) {
@@ -23,9 +30,13 @@ public class User {
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
+
+        roles = new ArrayList<>();
     }
 
-    public User() {}
+    public User() {
+        roles = new ArrayList<>();
+    }
 
     public Long getId() {
         return id;
@@ -51,6 +62,10 @@ public class User {
         return email;
     }
 
+    public List<Role> getRoles() {
+        return roles;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -60,6 +75,7 @@ public class User {
                 ", firstname='" + firstname + '\'' +
                 ", lastname='" + lastname + '\'' +
                 ", email='" + email + '\'' +
+                ", roles=" + roles +
                 '}';
     }
 }
