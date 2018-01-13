@@ -18,7 +18,7 @@ public class UserRepositoryTest {
     @Test
     public void saveTest() {
         try {
-            userRepository.save(new User("admin", "admin123", "Admin", "Admin", "admin@admin.com"));
+            userRepository.save(new User("user", "user123", "User", "User", "user@email.com"));
         } catch (DatabaseException e) {
             e.printStackTrace();
         }
@@ -32,4 +32,23 @@ public class UserRepositoryTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void findOneTest() {
+        try {
+            System.out.println(userRepository.findOne(1L));
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void findOneByUsernameTest() {
+        try {
+            System.out.println(userRepository.findOne("user"));
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

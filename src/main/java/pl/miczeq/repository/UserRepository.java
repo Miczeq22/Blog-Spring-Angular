@@ -10,11 +10,11 @@ public interface UserRepository {
 
     boolean update(Long id, User user) throws DatabaseException;
 
-    User findOne(Long id);
+    User findOne(Long id) throws DatabaseException;
 
-    User findOne(String username);
+    User findOne(String username) throws DatabaseException;
 
     List<User> findAll() throws DatabaseException;
 
-    boolean remove(Long id);
+    boolean remove(Long id) throws DatabaseException;
 }

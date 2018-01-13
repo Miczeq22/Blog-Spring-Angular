@@ -7,6 +7,7 @@ import pl.miczeq.util.ConnectionUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -87,13 +88,79 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User findOne(Long id) {
-        return null;
+    public User findOne(Long id) throws DatabaseException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        final String SQL = "SELECT * FROM user WHERE ID = ?";
+
+        try {
+            connection = ConnectionUtil.getConnection();
+            preparedStatement = connection.prepareStatement(SQL);
+            preparedStatement.setLong(1, id);
+
+            resultSet = ConnectionUtil.getResultSet(preparedStatement);
+
+            User user = null;
+
+            if (resultSet.next()) {
+                user = new User(resultSet.getLong("ID"), resultSet.getString("USERNAME"), resultSet.getString("PASSWORD"),
+                        resultSet.getString("FIRST_NAME"), resultSet.getString("LAST_NAME"), resultSet.getString("EMAIL"));
+            }
+
+            if (resultSet.next()) {
+                throw new DatabaseException("Istnieje wiecej niz jeden unikalny uzytkownik o ID: " + id);
+            }
+
+            return user;
+
+        } catch (SQLException e) {
+            throw new DatabaseException("Problem po stronie bazy danych.", e);
+        } finally {
+            ConnectionUtil.close(resultSet);
+            ConnectionUtil.close(preparedStatement);
+            ConnectionUtil.close(connection);
+
+        }
     }
 
     @Override
-    public User findOne(String username) {
-        return null;
+    public User findOne(String username) throws DatabaseException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        final String SQL = "SELECT * FROM user WHERE USERNAME = ?";
+
+        try {
+            connection = ConnectionUtil.getConnection();
+            preparedStatement = connection.prepareStatement(SQL);
+            preparedStatement.setString(1, username);
+
+            resultSet = ConnectionUtil.getResultSet(preparedStatement);
+
+            User user = null;
+
+            if (resultSet.next()) {
+                user = new User(resultSet.getLong("ID"), resultSet.getString("USERNAME"), resultSet.getString("PASSWORD"),
+                        resultSet.getString("FIRST_NAME"), resultSet.getString("LAST_NAME"), resultSet.getString("EMAIL"));
+            }
+
+            if (resultSet.next()) {
+                throw new DatabaseException("Istnieje wiecej niz jeden unikalny uzytkownik z Loginem: " + username);
+            }
+
+            return user;
+
+        } catch (SQLException e) {
+            throw new DatabaseException("Problem po stronie bazy danych.", e);
+        } finally {
+            ConnectionUtil.close(resultSet);
+            ConnectionUtil.close(preparedStatement);
+            ConnectionUtil.close(connection);
+
+        }
     }
 
     @Override
@@ -102,7 +169,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public boolean remove(Long id) {
+    public boolean remove(Long id) throws DatabaseException {
         return false;
     }
 }
