@@ -23,4 +23,13 @@ public class UserRepositoryTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void updateTest() {
+        try {
+            userRepository.update(1L, new User("admin", "admin123", "ADMIN", "Admin", "admin@email.com"));
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        }
+    }
 }

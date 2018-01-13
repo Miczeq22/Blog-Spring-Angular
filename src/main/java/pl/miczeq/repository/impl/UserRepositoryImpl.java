@@ -50,7 +50,40 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public boolean update(Long id, User user) throws DatabaseException {
-        return false;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        final String SQL = "UPDATE user SET USERNAME = ?, PASSWORD = ?, FIRST_NAME = ?, LAST_NAME = ?, EMAIL = ? WHERE ID = ?";
+
+        try {
+            connection = ConnectionUtil.getConnection();
+            preparedStatement = connection.prepareStatement(SQL);
+            preparedStatement.setString(1, user.getUsername());
+            preparedStatement.setString(2, user.getPassword());
+            preparedStatement.setString(3, user.getFirstname());
+            preparedStatement.setString(4, user.getLastname());
+            preparedStatement.setString(5, user.getEmail());
+            preparedStatement.setLong(6, id);
+
+            int executeUpdate = preparedStatement.executeUpdate();
+
+            boolean result;
+
+            if (executeUpdate != 0) {
+                System.out.println("Udalo sie zaktualizowac uzytkownika o ID: " + id + ".");
+                result = true;
+            } else {
+                throw new DatabaseException("Nie udalo sie zaktualizowac uzytkownika o ID: " + id + ", SQL: " + SQL + ".");
+            }
+
+            return result;
+
+        } catch (SQLException e) {
+            throw new DatabaseException("Problem po stronie bazy danych.", e);
+        } finally {
+            ConnectionUtil.close(preparedStatement);
+            ConnectionUtil.close(connection);
+        }
     }
 
     @Override
