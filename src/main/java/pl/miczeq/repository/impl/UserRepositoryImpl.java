@@ -1,5 +1,6 @@
 package pl.miczeq.repository.impl;
 
+import org.springframework.stereotype.Repository;
 import pl.miczeq.exception.BadUserException;
 import pl.miczeq.exception.DatabaseException;
 import pl.miczeq.model.Role;
@@ -11,6 +12,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class UserRepositoryImpl implements UserRepository {
     @Override
     public boolean save(User user) throws BadUserException, DatabaseException {

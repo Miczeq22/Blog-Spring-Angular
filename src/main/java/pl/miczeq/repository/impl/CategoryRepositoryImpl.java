@@ -1,5 +1,6 @@
 package pl.miczeq.repository.impl;
 
+import org.springframework.stereotype.Repository;
 import pl.miczeq.exception.BadCategoryException;
 import pl.miczeq.exception.DatabaseException;
 import pl.miczeq.model.Category;
@@ -10,6 +11,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class CategoryRepositoryImpl implements CategoryRepository {
     @Override
     public boolean save(Category category) throws BadCategoryException, DatabaseException {

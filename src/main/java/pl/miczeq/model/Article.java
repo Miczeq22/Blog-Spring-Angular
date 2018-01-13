@@ -8,24 +8,27 @@ public class Article {
     private String title;
     private String content;
     private Long userId;
+    private int likes;
     private Date lastUpdateDate;
     private String imgUrl;
     private List<Category> categories;
 
-    public Article(Long id, String title, String content, Long userId, Date lastUpdateDate, String imgUrl, List<Category> categories) {
+    public Article(Long id, String title, String content, Long userId, int likes, Date lastUpdateDate, String imgUrl) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.userId = userId;
+        this.likes = likes;
         this.lastUpdateDate = lastUpdateDate;
         this.imgUrl = imgUrl;
         this.categories = categories;
     }
 
-    public Article(String title, String content, Long userId, Date lastUpdateDate, String imgUrl, List<Category> categories) {
+    public Article(String title, String content, Long userId, int likes, Date lastUpdateDate, String imgUrl) {
         this.title = title;
         this.content = content;
         this.userId = userId;
+        this.likes = likes;
         this.lastUpdateDate = lastUpdateDate;
         this.imgUrl = imgUrl;
         this.categories = categories;
@@ -61,6 +64,10 @@ public class Article {
         return categories;
     }
 
+    public int getLikes() {
+        return likes;
+    }
+
     @Override
     public String toString() {
         return "Article{" +
@@ -68,6 +75,7 @@ public class Article {
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
                 ", userId=" + userId +
+                ", likes=" + likes +
                 ", lastUpdateDate=" + lastUpdateDate +
                 ", imgUrl='" + imgUrl + '\'' +
                 ", categories=" + categories +
