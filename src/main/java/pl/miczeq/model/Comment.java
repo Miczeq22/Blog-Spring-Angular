@@ -5,22 +5,25 @@ import java.sql.Date;
 public class Comment {
     private Long id;
     private Long userId;
+    private Long articleId;
     private String title;
     private String content;
     private int likes;
     private Date lastUpdateDate;
 
-    public Comment(Long id, Long userId, String title, String content, int likes, Date lastUpdateDate) {
+    public Comment(Long id, Long userId, Long articleId, String title, String content, int likes, Date lastUpdateDate) {
         this.id = id;
         this.userId = userId;
+        this.articleId = articleId;
         this.title = title;
         this.content = content;
         this.likes = likes;
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public Comment(Long userId, String title, String content, int likes, Date lastUpdateDate) {
+    public Comment(Long userId, Long articleId, String title, String content, int likes, Date lastUpdateDate) {
         this.userId = userId;
+        this.articleId = articleId;
         this.title = title;
         this.content = content;
         this.likes = likes;
@@ -51,11 +54,16 @@ public class Comment {
         return lastUpdateDate;
     }
 
+    public Long getArticleId() {
+        return articleId;
+    }
+
     @Override
     public String toString() {
         return "Comment{" +
                 "id=" + id +
                 ", userId=" + userId +
+                ", articleId=" + articleId +
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
                 ", likes=" + likes +

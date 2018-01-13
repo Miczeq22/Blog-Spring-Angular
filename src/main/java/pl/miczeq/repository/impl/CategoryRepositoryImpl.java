@@ -214,7 +214,8 @@ public class CategoryRepositoryImpl implements CategoryRepository {
         }
 
         if (findOneByName(category.getCategoryName()) != null) {
-            throw new BadCategoryException("Kategoria o nazwie: " + category.getCategoryName() + " jest juz w bazie.");
+            throw new BadCategoryException("Kategoria o-" +
+                    " nazwie: " + category.getCategoryName() + " jest juz w bazie.");
         }
     }
 
