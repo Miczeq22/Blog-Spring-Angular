@@ -5,10 +5,8 @@ import pl.miczeq.model.User;
 import pl.miczeq.repository.UserRepository;
 import pl.miczeq.util.ConnectionUtil;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserRepositoryImpl implements UserRepository {
@@ -165,7 +163,32 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<User> findAll() throws DatabaseException {
-        return null;
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+
+        final String SQL = "SELECT * FROM user";
+
+        try {
+            connection = ConnectionUtil.getConnection();
+            statement = connection.createStatement();
+            resultSet = ConnectionUtil.getResultSet(statement, SQL);
+
+            List<User> users = new ArrayList<>();
+
+            while (resultSet.next()) {
+                users.add(new User(resultSet.getLong("ID"), resultSet.getString("USERNAME"), resultSet.getString("PASSWORD"),
+                        resultSet.getString("FIRST_NAME"), resultSet.getString("LAST_NAME"), resultSet.getString("EMAIL")));
+            }
+
+            return users;
+        } catch (SQLException e) {
+            throw new DatabaseException("Problem po stronie bazy danych.", e);
+        } finally {
+            ConnectionUtil.close(resultSet);
+            ConnectionUtil.close(statement);
+            ConnectionUtil.close(connection);
+        }
     }
 
     @Override

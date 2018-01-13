@@ -51,4 +51,12 @@ public class UserRepositoryTest {
         }
     }
 
+    @Test
+    public void findAll() {
+        try {
+            userRepository.findAll().forEach(user -> System.out.println(user));
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        }
+    }
 }
