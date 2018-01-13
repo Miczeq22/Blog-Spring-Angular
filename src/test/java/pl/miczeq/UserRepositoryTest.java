@@ -27,7 +27,7 @@ public class UserRepositoryTest {
     @Test
     public void updateTest() {
         try {
-            userRepository.update(1L, new User("admin", "admin123", "ADMIN", "Admin", "admin@email.com"));
+            System.out.println(userRepository.update(1L, new User("admin", "admin123", "ADMIN", "Admin", "admin@email.com")));
         } catch (DatabaseException e) {
             e.printStackTrace();
         }
@@ -55,6 +55,15 @@ public class UserRepositoryTest {
     public void findAll() {
         try {
             userRepository.findAll().forEach(user -> System.out.println(user));
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void removeTest() {
+        try {
+            userRepository.remove(3L);
         } catch (DatabaseException e) {
             e.printStackTrace();
         }

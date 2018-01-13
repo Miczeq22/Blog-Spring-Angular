@@ -28,16 +28,13 @@ public class UserRepositoryImpl implements UserRepository {
 
             int executeUpdate = preparedStatement.executeUpdate();
 
-            boolean result;
-
             if (executeUpdate != 0) {
                 System.out.println("Udalo sie dodac uzytkownika: " + user.getUsername() + ".");
-                result = true;
             } else {
                 throw new DatabaseException("Nie udalo sie dodac uzytkownika: " + user.getUsername() + ", SQL: " + SQL + ".");
             }
 
-            return result;
+            return executeUpdate > 0;
 
         } catch (SQLException e) {
             throw new DatabaseException("Problem po stronie bazy danych.", e);
@@ -66,16 +63,13 @@ public class UserRepositoryImpl implements UserRepository {
 
             int executeUpdate = preparedStatement.executeUpdate();
 
-            boolean result;
-
             if (executeUpdate != 0) {
                 System.out.println("Udalo sie zaktualizowac uzytkownika o ID: " + id + ".");
-                result = true;
             } else {
                 throw new DatabaseException("Nie udalo sie zaktualizowac uzytkownika o ID: " + id + ", SQL: " + SQL + ".");
             }
 
-            return result;
+            return executeUpdate > 0;
 
         } catch (SQLException e) {
             throw new DatabaseException("Problem po stronie bazy danych.", e);
@@ -193,6 +187,30 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public boolean remove(Long id) throws DatabaseException {
-        return false;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        final String SQL = "DELETE FROM user WHERE ID = ?";
+
+        try {
+            connection = ConnectionUtil.getConnection();
+            preparedStatement = connection.prepareStatement(SQL);
+            preparedStatement.setLong(1, id);
+
+            int executeUpdate = preparedStatement.executeUpdate();
+
+            if (executeUpdate != 0) {
+                System.out.println("Udalo sie usunac uzytkownika o ID: " + id + ".");
+            } else {
+                throw new DatabaseException("Nie udalo sie usunac uzytownika o ID: " + id + ".");
+            }
+
+            return executeUpdate > 0;
+        } catch (SQLException e) {
+            throw new DatabaseException("Problem po stronie bazy danych.", e);
+        } finally {
+            ConnectionUtil.close(preparedStatement);
+            ConnectionUtil.close(connection);
+        }
     }
 }
