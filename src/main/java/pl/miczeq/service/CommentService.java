@@ -9,7 +9,7 @@ public interface CommentService {
 
     Comment findOne(Long id);
 
-    List<Comment> findAll();
+    List<Comment> findAllForArticle(Long id);
 
     boolean remove(Long id);
 }

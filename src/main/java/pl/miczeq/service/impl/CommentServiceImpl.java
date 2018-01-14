@@ -54,11 +54,11 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<Comment> findAll() {
+    public List<Comment> findAllForArticle(Long id) {
         List<Comment> comments;
 
         try {
-            comments = commentRepository.findAll();
+            comments = commentRepository.findAllForArticle(id);
         } catch (DatabaseException e) {
             comments = null;
             System.out.println(e.getMessage());

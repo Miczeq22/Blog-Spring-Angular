@@ -126,18 +126,19 @@ public class CommentRepositoryImpl implements CommentRepository {
     }
 
     @Override
-    public List<Comment> findAll() throws DatabaseException {
+    public List<Comment> findAllForArticle(Long id) throws DatabaseException {
         Connection connection = null;
-        Statement statement = null;
+        PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
-        final String SQL = "SELECT * FROM comment";
+        final String SQL = "SELECT * FROM comment WHERE ARTICLE_ID = ?";
 
         try {
             connection = ConnectionUtil.getConnection();
-            statement = connection.createStatement();
+            preparedStatement = connection.prepareStatement(SQL);
+            preparedStatement.setLong(1, id);
 
-            resultSet = ConnectionUtil.getResultSet(statement, SQL);
+            resultSet = ConnectionUtil.getResultSet(preparedStatement);
 
             List<Comment> comments = new ArrayList<>();
 
@@ -152,7 +153,7 @@ public class CommentRepositoryImpl implements CommentRepository {
             throw new DatabaseException("Problem po stronie bazy danych.", e);
         } finally {
             ConnectionUtil.close(resultSet);
-            ConnectionUtil.close(statement);
+            ConnectionUtil.close(preparedStatement);
             ConnectionUtil.close(connection);
         }
     }

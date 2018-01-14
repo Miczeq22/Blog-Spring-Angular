@@ -13,7 +13,7 @@ public interface CommentRepository {
 
     Comment findOne(Long id) throws DatabaseException;
 
-    List<Comment> findAll() throws DatabaseException;
+    List<Comment> findAllForArticle(Long id) throws DatabaseException;
 
     boolean remove(Long id) throws DatabaseException;
 }
