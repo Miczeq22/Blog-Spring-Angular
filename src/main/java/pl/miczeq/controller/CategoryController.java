@@ -4,22 +4,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import pl.miczeq.model.Article;
-import pl.miczeq.service.ArticleService;
+import pl.miczeq.model.Category;
+import pl.miczeq.service.CategoryService;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/api/article")
+@RequestMapping("/api/category")
 @CrossOrigin
-public class ArticleController {
-    private final ArticleService articleService;
+public class CategoryController {
+    private final CategoryService categoryService;
 
     @Autowired
-    public ArticleController(ArticleService articleService) {
-        this.articleService = articleService;
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
     }
 
     @GetMapping("")
@@ -27,12 +27,12 @@ public class ArticleController {
     public @ResponseBody Map<String, Object> getAll() {
         Map<String, Object> map = new HashMap<>();
 
-        List<Article> articles = articleService.findAll();
+        List<Category> categories = categoryService.findAll();
         boolean status = false;
 
-        if (articles != null) {
+        if (categories != null) {
             status = true;
-            map.put("articles", articles);
+            map.put("categories", categories);
         }
 
         map.put("status", status);
@@ -42,15 +42,15 @@ public class ArticleController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public @ResponseBody Map<String, Object> getOne(@PathVariable("id") Long id) {
+    public @ResponseBody Map<String, Object> getAllById(@PathVariable("id") Long id) {
         Map<String, Object> map = new HashMap<>();
 
-        Article article = articleService.findOne(id);
+        Category category = categoryService.findOne(id);
         boolean status = false;
 
-        if (article != null) {
+        if (category != null) {
             status = true;
-            map.put("article", article);
+            map.put("category", category);
         }
 
         map.put("status", status);
@@ -60,10 +60,10 @@ public class ArticleController {
 
     @PostMapping("")
     @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody Map<String, Object> save(@RequestBody Article article) {
+    public @ResponseBody Map<String, Object> save(@RequestBody Category category) {
         Map<String, Object> map = new HashMap<>();
 
-        map.put("status", articleService.save(article));
+        map.put("status", categoryService.save(category));
 
         return map;
     }
@@ -73,7 +73,7 @@ public class ArticleController {
     public @ResponseBody Map<String, Object> remove(@PathVariable("id") Long id) {
         Map<String, Object> map = new HashMap<>();
 
-        map.put("status", articleService.remove(id));
+        map.put("status", categoryService.remove(id));
 
         return map;
     }

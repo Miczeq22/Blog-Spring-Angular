@@ -40,12 +40,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.authorizeRequests()
-                .antMatchers("/getToken")
-                .permitAll()
                 .anyRequest()
                 .permitAll()
                 .and()
-                .addFilterBefore(new JWTLoginFilter("/getToken", authenticationManager()), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JWTLoginFilter("/api/getToken", authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
     }

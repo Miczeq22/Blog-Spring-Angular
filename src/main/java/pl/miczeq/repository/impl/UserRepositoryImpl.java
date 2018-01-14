@@ -94,7 +94,7 @@ public class UserRepositoryImpl implements UserRepository {
         ResultSet resultSet = null;
 
         final String SQL = "SELECT u.ID, u.USERNAME, u.PASSWORD, u.FIRST_NAME, u.LAST_NAME, u.EMAIL, r.ID AS ROLE_ID, r.ROLE_NAME FROM user u" +
-                " INNER JOIN role r ON (u.ROLE_ID = r.ID) WHERE ID = ?";
+                " INNER JOIN role r ON (u.ROLE_ID = r.ID) WHERE u.ID = ?";
 
         try {
             connection = ConnectionUtil.getConnection();
@@ -298,11 +298,11 @@ public class UserRepositoryImpl implements UserRepository {
             throw new BadUserException("Imie nie moze byc puste.");
         }
 
-        if (findOneByUsername(user.getUsername()) != null) {
+        if (user.getId() == null && findOneByUsername(user.getUsername()) != null) {
             throw new BadUserException("Uzytkownik o takim loginie: " + user.getUsername() + " juz istnieje w bazie.");
         }
 
-        if (findOneByEmail(user.getEmail()) != null) {
+        if (user.getId() == null && findOneByEmail(user.getEmail()) != null) {
             throw new BadUserException("Uzytkownik o takim emailu: " + user.getEmail() + " juz istnieje w bazie.");
         }
     }

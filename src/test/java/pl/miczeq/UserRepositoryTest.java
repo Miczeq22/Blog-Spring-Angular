@@ -55,7 +55,7 @@ public class UserRepositoryTest {
     @Test
     public void findOneByEmailTest() {
         try {
-            System.out.println(userRepository.findOneByEmail("usser@email.com"));
+            System.out.println(userRepository.findOneByEmail("user@email.com"));
         } catch (DatabaseException e) {
             e.printStackTrace();
         }
