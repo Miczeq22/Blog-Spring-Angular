@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import pl.miczeq.exception.BadUserException;
+import pl.miczeq.exception.DatabaseException;
 import pl.miczeq.model.User;
 import pl.miczeq.service.UserService;
 
@@ -27,8 +29,14 @@ public class UserController {
     public @ResponseBody Map<String, Object> getAll() {
         Map<String, Object> map = new HashMap<>();
 
-        List<User> users = userService.findAll();
+        List<User> users = null;
         boolean status = false;
+
+        try {
+            users = userService.findAll();
+        } catch (DatabaseException e) {
+            map.put("error", "Database Exception: " + e.getMessage());
+        }
 
         if (users != null) {
             status = true;
@@ -45,8 +53,14 @@ public class UserController {
     public @ResponseBody Map<String, Object> getOneById(@PathVariable("id") Long id) {
         Map<String, Object> map = new HashMap<>();
 
-        User user = userService.findOne(id);
+        User user = null;
         boolean status = false;
+
+        try {
+            user = userService.findOne(id);
+        } catch (DatabaseException e) {
+            map.put("error", "Database Exception: " + e.getMessage());
+        }
 
         if (user != null) {
             status = true;
@@ -63,8 +77,14 @@ public class UserController {
     public @ResponseBody Map<String, Object> getOneByUsername(@PathVariable("username") String username) {
         Map<String, Object> map = new HashMap<>();
 
-        User user = userService.findOneByUsername(username);
+        User user = null;
         boolean status = false;
+
+        try {
+            user = userService.findOneByUsername(username);
+        } catch (DatabaseException e) {
+            map.put("error", "Database Exception: " + e.getMessage());
+        }
 
         if (user != null) {
             status = true;
@@ -81,8 +101,14 @@ public class UserController {
     public @ResponseBody Map<String, Object> getOneByEmail(@PathVariable("email") String email) {
         Map<String, Object> map = new HashMap<>();
 
-        User user = userService.findOneByEmail(email);
+        User user = null;
         boolean status = false;
+
+        try {
+            user = userService.findOneByEmail(email);
+        } catch (DatabaseException e) {
+            map.put("status", "Database Exception: " + e.getMessage());
+        }
 
         if (user != null) {
             status = true;
@@ -95,11 +121,20 @@ public class UserController {
     }
 
     @PostMapping("")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("permitAll()")
     public @ResponseBody Map<String, Object> save(@RequestBody User user) {
         Map<String, Object> map = new HashMap<>();
+        boolean status = false;
 
-        map.put("status", userService.save(user));
+        try {
+            status = userService.save(user);
+        } catch (BadUserException e) {
+            map.put("error", "Bad User Exception: " + e.getMessage());
+        } catch (DatabaseException e) {
+            map.put("error", "Database Exception: " + e.getMessage());
+        }
+
+        map.put("status", status);
 
         return map;
     }
@@ -108,8 +143,15 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public @ResponseBody Map<String, Object> remove(@PathVariable("id") Long id) {
         Map<String, Object> map = new HashMap<>();
+        boolean status = false;
 
-        map.put("status", userService.remove(id));
+        try {
+            status = userService.remove(id);
+        } catch (DatabaseException e) {
+            map.put("error", "Database Exception: " + e.getMessage());
+        }
+
+        map.put("status", status);
 
         return map;
     }

@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import pl.miczeq.exception.DatabaseException;
 import pl.miczeq.model.Role;
+import pl.miczeq.model.User;
 import pl.miczeq.repository.impl.UserRepositoryImpl;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,14 +27,19 @@ public class TokenHelper {
     public static HttpServletResponse addAuthentication(HttpServletResponse response, String username) {
         Claims claims = Jwts.claims().setSubject(username);
         String roleName = "";
+        Long userId = null;
 
         try {
-            Role role = new UserRepositoryImpl().findOneByUsername(username).getRoles().stream().findFirst().orElse(null);
+           // Role role = new UserRepositoryImpl().findOneByUsername(username).getRoles().stream().findFirst().orElse(null);
+            User user = new UserRepositoryImpl().findOneByUsername(username);
+            Role role = user.getRoles().stream().findFirst().orElse(null);
+            userId = user.getId();
             if (role != null) roleName = role.getRoleName();
         } catch (DatabaseException e) {
             e.printStackTrace();
         }
 
+        claims.put("id", userId);
         claims.put("role", roleName);
 
         String JWT = Jwts.builder().setClaims(claims)

@@ -34,6 +34,13 @@ public class Article {
         this.categories = categories;
     }
 
+    public Article(String title, String content, Long userId, String imgUrl) {
+        this.title = title;
+        this.content = content;
+        this.userId = userId;
+        this.imgUrl = imgUrl;
+    }
+
     public Article() {}
 
     public Long getId() {

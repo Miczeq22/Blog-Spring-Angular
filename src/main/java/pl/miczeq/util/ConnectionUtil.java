@@ -6,7 +6,7 @@ import java.sql.*;
 
 public final class ConnectionUtil {
     public static Connection getConnection() throws DatabaseException {
-        final String URL = "jdbc:mysql://localhost:3306/blog";
+        final String URL = "jdbc:mysql://localhost:3306/blog?characterEncoding=UTF-8";
         final String USERNAME = "root";
         final String PASSWORD = "";
 

@@ -20,95 +20,40 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean save(User user) {
+    public boolean save(User user) throws BadUserException, DatabaseException {
         boolean result;
-        try {
-            if (user.getId() != null) {
-                result = userRepository.update(user.getId(), user);
-            } else {
-                result = userRepository.save(user);
-            }
-        } catch (BadUserException | DatabaseException e) {
-            result = false;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+
+        if (user.getId() != null) {
+            result = userRepository.update(user.getId(), user);
+        } else {
+            result = userRepository.save(user);
         }
 
         return result;
     }
 
     @Override
-    public User findOne(Long id) {
-        User user;
-
-        try {
-            user = userRepository.findOne(id);
-        } catch (DatabaseException e) {
-            user = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-
-        return user;
+    public User findOne(Long id) throws DatabaseException {
+        return userRepository.findOne(id);
     }
 
     @Override
-    public User findOneByUsername(String username) {
-        User user;
-
-        try {
-            user = userRepository.findOneByUsername(username);
-        } catch (DatabaseException e) {
-            user = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-
-        return user;
+    public User findOneByUsername(String username) throws DatabaseException {
+        return userRepository.findOneByUsername(username);
     }
 
     @Override
-    public User findOneByEmail(String email) {
-        User user;
-
-        try {
-            user = userRepository.findOneByEmail(email);
-        } catch (DatabaseException e) {
-            user = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-
-        return user;
+    public User findOneByEmail(String email) throws DatabaseException {
+        return userRepository.findOneByEmail(email);
     }
 
     @Override
-    public List<User> findAll() {
-        List<User> users;
-
-        try {
-            users = userRepository.findAll();
-        } catch (DatabaseException e) {
-            users = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-
-        return users;
+    public List<User> findAll() throws DatabaseException {
+        return userRepository.findAll();
     }
 
     @Override
-    public boolean remove(Long id) {
-        boolean result;
-
-        try {
-            result = userRepository.remove(id);
-        } catch (DatabaseException e) {
-            result = false;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-
-        return result;
+    public boolean remove(Long id) throws DatabaseException {
+        return userRepository.remove(id);
     }
 }

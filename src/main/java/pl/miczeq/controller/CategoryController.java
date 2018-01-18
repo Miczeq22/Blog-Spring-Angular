@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import pl.miczeq.exception.BadCategoryException;
+import pl.miczeq.exception.DatabaseException;
 import pl.miczeq.model.Category;
 import pl.miczeq.service.CategoryService;
 
@@ -27,8 +29,14 @@ public class CategoryController {
     public @ResponseBody Map<String, Object> getAll() {
         Map<String, Object> map = new HashMap<>();
 
-        List<Category> categories = categoryService.findAll();
+        List<Category> categories = null;
         boolean status = false;
+
+        try {
+            categories = categoryService.findAll();
+        } catch (DatabaseException e) {
+            map.put("error", "Database Exception: " + e.getMessage());
+        }
 
         if (categories != null) {
             status = true;
@@ -45,8 +53,14 @@ public class CategoryController {
     public @ResponseBody Map<String, Object> getAllById(@PathVariable("id") Long id) {
         Map<String, Object> map = new HashMap<>();
 
-        Category category = categoryService.findOne(id);
+        Category category = null;
         boolean status = false;
+
+        try {
+            category = categoryService.findOne(id);
+        } catch (DatabaseException e) {
+            map.put("error", "Database Exception: " + e.getMessage());
+        }
 
         if (category != null) {
             status = true;
@@ -62,8 +76,18 @@ public class CategoryController {
     @PreAuthorize("hasRole('ADMIN')")
     public @ResponseBody Map<String, Object> save(@RequestBody Category category) {
         Map<String, Object> map = new HashMap<>();
+        boolean status = false;
 
-        map.put("status", categoryService.save(category));
+        try {
+            categoryService.save(category);
+            status = true;
+        } catch (BadCategoryException e) {
+            map.put("error", "Bad Category Exception: " + e.getMessage());
+        } catch (DatabaseException e) {
+            map.put("error", "Database Exception: " + e.getMessage());
+        }
+
+        map.put("status", status);
 
         return map;
     }
@@ -72,8 +96,15 @@ public class CategoryController {
     @PreAuthorize("hasRole('ADMIN')")
     public @ResponseBody Map<String, Object> remove(@PathVariable("id") Long id) {
         Map<String, Object> map = new HashMap<>();
+        boolean status = false;
 
-        map.put("status", categoryService.remove(id));
+        try {
+            categoryService.remove(id);
+        } catch (DatabaseException e) {
+            map.put("error", "Database Exception: " + e.getMessage());
+        }
+
+        map.put("status", status);
 
         return map;
     }

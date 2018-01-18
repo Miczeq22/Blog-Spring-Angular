@@ -103,6 +103,10 @@ public class CategoryRepositoryImpl implements CategoryRepository {
                 throw new DatabaseException("Istnieje wiecej niz jedna kategoria o unikalnym ID: " + id + ".");
             }
 
+            if (category == null) {
+                throw new DatabaseException("W bazie nie istnieje kategoria o ID: " + id + ".");
+            }
+
             return category;
         } catch (SQLException e) {
             throw new DatabaseException("Problem po stronie bazy danych.", e);
@@ -136,6 +140,10 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 
             if (resultSet.next()) {
                 throw new DatabaseException("Istnieje wiecej niz jedna kategoria o unikalej nazwie: " + name + ".");
+            }
+
+            if (category == null) {
+                throw new DatabaseException("W bazie nie istnieje kategoria o nazwie: " + name + ".");
             }
 
             return category;

@@ -20,66 +20,30 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public boolean save(Comment comment) {
+    public boolean save(Comment comment) throws BadCommentException, DatabaseException {
         boolean result;
 
-        try {
-            if (comment.getId() != null) {
-                result = commentRepository.update(comment.getId(), comment);
-            } else {
-                result = commentRepository.save(comment);
-            }
-        } catch (BadCommentException | DatabaseException e) {
-            result = false;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+        if (comment.getId() != null) {
+            result = commentRepository.update(comment.getId(), comment);
+        } else {
+            result = commentRepository.save(comment);
         }
 
         return result;
     }
 
     @Override
-    public Comment findOne(Long id) {
-        Comment comment;
-
-        try {
-            comment = commentRepository.findOne(id);
-        } catch (DatabaseException e) {
-            comment = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-
-        return comment;
+    public Comment findOne(Long id) throws DatabaseException {
+        return commentRepository.findOne(id);
     }
 
     @Override
-    public List<Comment> findAllForArticle(Long id) {
-        List<Comment> comments;
-
-        try {
-            comments = commentRepository.findAllForArticle(id);
-        } catch (DatabaseException e) {
-            comments = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-
-        return comments;
+    public List<Comment> findAllForArticle(Long id) throws DatabaseException {
+        return commentRepository.findAllForArticle(id);
     }
 
     @Override
-    public boolean remove(Long id) {
-        boolean result;
-
-        try {
-            result = commentRepository.remove(id);
-        } catch (DatabaseException e) {
-            result = false;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-
-        return result;
+    public boolean remove(Long id) throws DatabaseException {
+        return commentRepository.remove(id);
     }
 }

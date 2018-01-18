@@ -21,14 +21,14 @@ public class Comment {
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public Comment(Long userId, Long articleId, String title, String content, int likes, Date lastUpdateDate) {
+    public Comment(Long userId, Long articleId, String title, String content) {
         this.userId = userId;
         this.articleId = articleId;
         this.title = title;
         this.content = content;
-        this.likes = likes;
-        this.lastUpdateDate = lastUpdateDate;
     }
+
+    public Comment() {}
 
     public Long getId() {
         return id;

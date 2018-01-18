@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import pl.miczeq.exception.BadArticleException;
+import pl.miczeq.exception.DatabaseException;
 import pl.miczeq.model.Article;
 import pl.miczeq.service.ArticleService;
 
@@ -27,7 +29,12 @@ public class ArticleController {
     public @ResponseBody Map<String, Object> getAll() {
         Map<String, Object> map = new HashMap<>();
 
-        List<Article> articles = articleService.findAll();
+        List<Article> articles = null;
+        try {
+             articles = articleService.findAll();
+        } catch (DatabaseException e) {
+            map.put("error", "Database Exception: " + e.getMessage());
+        }
         boolean status = false;
 
         if (articles != null) {
@@ -45,8 +52,14 @@ public class ArticleController {
     public @ResponseBody Map<String, Object> getOne(@PathVariable("id") Long id) {
         Map<String, Object> map = new HashMap<>();
 
-        Article article = articleService.findOne(id);
+        Article article = null;
         boolean status = false;
+
+        try {
+            article = articleService.findOne(id);
+        } catch (DatabaseException e) {
+            map.put("error", "Database Exception: " + e.getMessage());
+        }
 
         if (article != null) {
             status = true;
@@ -62,8 +75,18 @@ public class ArticleController {
     @PreAuthorize("hasRole('ADMIN')")
     public @ResponseBody Map<String, Object> save(@RequestBody Article article) {
         Map<String, Object> map = new HashMap<>();
+        boolean status = false;
 
-        map.put("status", articleService.save(article));
+        try {
+            articleService.save(article);
+            status = true;
+        } catch (BadArticleException e) {
+            map.put("error", "Bad Article Exception: " + e.getMessage());
+        } catch (DatabaseException e) {
+            map.put("error", "Database Exception: " + e.getMessage());
+        }
+
+        map.put("status", status);
 
         return map;
     }
@@ -72,8 +95,16 @@ public class ArticleController {
     @PreAuthorize("hasRole('ADMIN')")
     public @ResponseBody Map<String, Object> remove(@PathVariable("id") Long id) {
         Map<String, Object> map = new HashMap<>();
+        boolean status = false;
 
-        map.put("status", articleService.remove(id));
+        try {
+            articleService.remove(id);
+            status = true;
+        } catch (DatabaseException e) {
+            map.put("error", "Database Exception: " + e.getMessage());
+        }
+
+        map.put("status", status);
 
         return map;
     }

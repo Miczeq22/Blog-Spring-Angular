@@ -55,19 +55,16 @@ public class UserRepositoryImpl implements UserRepository {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
 
-        final String SQL = "UPDATE user SET USERNAME = ?, PASSWORD = ?, FIRST_NAME = ?, LAST_NAME = ?, EMAIL = ? WHERE ID = ?";
+        final String SQL = "UPDATE user SET FIRST_NAME = ?, LAST_NAME = ? WHERE ID = ?";
 
         validateUser(user);
 
         try {
             connection = ConnectionUtil.getConnection();
             preparedStatement = connection.prepareStatement(SQL);
-            preparedStatement.setString(1, user.getUsername());
-            preparedStatement.setString(2, user.getPassword());
-            preparedStatement.setString(3, user.getFirstname());
-            preparedStatement.setString(4, user.getLastname());
-            preparedStatement.setString(5, user.getEmail());
-            preparedStatement.setLong(6, id);
+            preparedStatement.setString(1, user.getFirstname());
+            preparedStatement.setString(2, user.getLastname());
+            preparedStatement.setLong(3, id);
 
             int executeUpdate = preparedStatement.executeUpdate();
 
@@ -113,6 +110,10 @@ public class UserRepositoryImpl implements UserRepository {
 
             if (resultSet.next()) {
                 throw new DatabaseException("Istnieje wiecej niz jeden unikalny uzytkownik o ID: " + id);
+            }
+
+            if (user == null) {
+                throw new DatabaseException("W bazie nie istnieje uzytkownik o ID: " + id + ".");
             }
 
             return user;
@@ -201,6 +202,10 @@ public class UserRepositoryImpl implements UserRepository {
 
             if (resultSet.next()) {
                 throw new DatabaseException("Istnieje wiecej niz jeden unikalny uzytkownik z emailem: " + email + ".");
+            }
+
+            if (user == null) {
+                throw new DatabaseException("W bazie nie istnieje uzytkownik o emailu: " + email + ".");
             }
 
             return user;

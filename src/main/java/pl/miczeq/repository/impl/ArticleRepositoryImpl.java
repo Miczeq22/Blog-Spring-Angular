@@ -28,7 +28,7 @@ public class ArticleRepositoryImpl implements ArticleRepository {
             preparedStatement.setString(1, article.getTitle());
             preparedStatement.setString(2, article.getContent());
             preparedStatement.setLong(3, article.getUserId());
-            preparedStatement.setInt(4, article.getLikes());
+            preparedStatement.setInt(4, 0);
             preparedStatement.setDate(5, new Date(System.currentTimeMillis()));
             preparedStatement.setString(6, article.getImgUrl());
 
@@ -230,7 +230,7 @@ public class ArticleRepositoryImpl implements ArticleRepository {
             throw new BadArticleException("Zawartosc nie moze byc pusty.");
         }
 
-        if (findOneByTitle(article.getTitle()) != null) {
+        if (article.getId() == null && findOneByTitle(article.getTitle()) != null) {
             throw new BadArticleException("Artykul z tytulem: " + article.getTitle() + " juz istnieje w bazie.");
         }
     }

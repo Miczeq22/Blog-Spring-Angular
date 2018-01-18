@@ -20,81 +20,35 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public boolean save(Category category) {
+    public boolean save(Category category) throws BadCategoryException, DatabaseException {
         boolean result;
 
-        try {
-            if (category.getId() != null) {
-                result = categoryRepository.update(category.getId(), category);
-            } else {
-                result = categoryRepository.save(category);
-            }
-        } catch (BadCategoryException | DatabaseException e) {
-            result = false;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+        if (category.getId() != null) {
+            result = categoryRepository.update(category.getId(), category);
+        } else {
+            result = categoryRepository.save(category);
         }
 
         return result;
     }
 
     @Override
-    public Category findOne(Long id) {
-        Category category;
-
-        try {
-            category = categoryRepository.findOne(id);
-        } catch (DatabaseException e) {
-            category = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-
-        return category;
+    public Category findOne(Long id) throws DatabaseException {
+        return categoryRepository.findOne(id);
     }
 
     @Override
-    public Category findOneByName(String name) {
-        Category category;
-
-        try {
-            category = categoryRepository.findOneByName(name);
-        } catch (DatabaseException e) {
-            category = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-
-        return category;
+    public Category findOneByName(String name) throws DatabaseException {
+        return categoryRepository.findOneByName(name);
     }
 
     @Override
-    public List<Category> findAll() {
-        List<Category> categories;
-
-        try {
-            categories = categoryRepository.findAll();
-        } catch (DatabaseException e) {
-            categories = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-
-        return categories;
+    public List<Category> findAll() throws DatabaseException {
+        return categoryRepository.findAll();
     }
 
     @Override
-    public boolean remove(Long id) {
-        boolean result;
-
-        try {
-            result = categoryRepository.remove(id);
-        } catch (DatabaseException e) {
-            result = false;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-
-        return result;
+    public boolean remove(Long id) throws DatabaseException {
+        return categoryRepository.remove(id);
     }
 }

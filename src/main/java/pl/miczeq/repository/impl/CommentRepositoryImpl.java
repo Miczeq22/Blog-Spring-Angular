@@ -29,8 +29,8 @@ public class CommentRepositoryImpl implements CommentRepository {
             preparedStatement.setLong(2, comment.getArticleId());
             preparedStatement.setString(3, comment.getTitle());
             preparedStatement.setString(4, comment.getContent());
-            preparedStatement.setInt(5, comment.getLikes());
-            preparedStatement.setDate(6, comment.getLastUpdateDate());
+            preparedStatement.setInt(5, 0);
+            preparedStatement.setDate(6, new Date(System.currentTimeMillis()));
 
             int executeUpdate = preparedStatement.executeUpdate();
 
@@ -112,6 +112,10 @@ public class CommentRepositoryImpl implements CommentRepository {
 
             if (resultSet.next()) {
                 throw new DatabaseException("Istnieje wiecej niz jeden komentarz o unikalnym ID: " + id + ".");
+            }
+
+            if (comment == null) {
+                throw new DatabaseException("W bazie nie istnieje komentarz o ID: " + id + ".");
             }
 
             return comment;

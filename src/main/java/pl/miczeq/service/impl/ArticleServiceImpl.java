@@ -21,81 +21,35 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public boolean save(Article article) {
+    public boolean save(Article article) throws BadArticleException, DatabaseException {
         boolean result;
 
-        try {
-            if (article.getId() != null) {
-                result = articleRepository.update(article.getId(), article);
-            } else {
-                result = articleRepository.save(article);
-            }
-        } catch (BadArticleException | DatabaseException e) {
-            result = false;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+        if (article.getId() != null) {
+            result = articleRepository.update(article.getId(), article);
+        } else {
+            result = articleRepository.save(article);
         }
 
         return result;
     }
 
     @Override
-    public Article findOne(Long id) {
-        Article article;
-
-        try {
-            article = articleRepository.findOne(id);
-        } catch (DatabaseException e) {
-            article = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-
-        return article;
+    public Article findOne(Long id) throws DatabaseException {
+        return articleRepository.findOne(id);
     }
 
     @Override
-    public Article findOneByTitle(String title) {
-        Article article;
-
-        try {
-            article = articleRepository.findOneByTitle(title);
-        } catch (DatabaseException e) {
-            article = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-
-        return article;
+    public Article findOneByTitle(String title) throws DatabaseException {
+        return articleRepository.findOneByTitle(title);
     }
 
     @Override
-    public List<Article> findAll() {
-        List<Article> articles;
-
-        try {
-            articles = articleRepository.findAll();
-        } catch (DatabaseException e) {
-            articles = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-
-        return articles;
+    public List<Article> findAll() throws DatabaseException {
+        return articleRepository.findAll();
     }
 
     @Override
-    public boolean remove(Long id) {
-        boolean result;
-
-        try {
-            result = articleRepository.remove(id);
-        } catch (DatabaseException e) {
-            result = false;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-
-        return result;
+    public boolean remove(Long id) throws DatabaseException {
+        return articleRepository.remove(id);
     }
 }
